@@ -22,15 +22,15 @@
 
 #define SAMPLE_COUNT 1024
 
-int main(int argc, const char *argv[])
+int main()
 {
 	gnuspeech_trm_t trm = gnuspeech_trm_create();
 
 	gnuspeech_trm_set_config(trm, TRM_CONF_VOLUME, 60.0);
 	gnuspeech_trm_set_config(trm, TRM_CONF_FILTER_PERIOD, 10e-3);
 
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_GLOT_PITCH, 1);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_GLOT_VOL, 30);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_GLOT_PITCH, 0);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_GLOT_VOL, 60);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_VELUM, 0.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_VOL, 0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_POS, 0);
@@ -38,8 +38,8 @@ int main(int argc, const char *argv[])
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_CF, 100.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R1, 1.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R1, 1.0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R2, 0.75);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R3, 0.25);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R2, 1.0);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R3, 1.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R4, 1.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R5, 1.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R6, 1.0);
@@ -47,11 +47,14 @@ int main(int argc, const char *argv[])
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R8, 1.0);
 
 	float samples[SAMPLE_COUNT];
-	for (int i = 0; i < 100; i++) {
-		unsigned int n =
-		    gnuspeech_trm_synthesize(trm, samples, SAMPLE_COUNT, false);
+	for (int i = 0; i < 40; i++) {
+		int n = gnuspeech_trm_synthesize(trm, samples, SAMPLE_COUNT, false);
+		if (n < 0) {
+			return 1;  // Panic! Abort!
+		}
 		write(STDOUT_FILENO, samples, sizeof(float) * n);
 	}
 
 	gnuspeech_trm_free(trm);
+	return 0;
 }

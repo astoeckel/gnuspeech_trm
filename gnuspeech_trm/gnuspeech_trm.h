@@ -154,20 +154,37 @@ TRM_DLL_EXPORT bool gnuspeech_trm_get_parameter(const gnuspeech_trm_t inst,
                                                 int param, double *value);
 
 /**
+ * Reads all parameter values from the given array.
+ */
+TRM_DLL_EXPORT bool gnuspeech_trm_set_parameters(gnuspeech_trm_t inst,
+                                                const double *dx);
+
+/**
+ * Writes the current parameter values to the given array.
+ */
+TRM_DLL_EXPORT bool gnuspeech_trm_get_parameters(gnuspeech_trm_t inst,
+                                                 double *dx);
+
+/**
  * Updates the dynamics for all parameters, i.e. the rate with which the
  * parameters should change while synthesizing.
  */
-TRM_DLL_EXPORT bool gnuspeech_trm_update_parameter_dynamics(
-    gnuspeech_trm_t inst, double *dx);
+TRM_DLL_EXPORT bool gnuspeech_trm_set_parameter_dynamics(gnuspeech_trm_t inst,
+                                                         const double *dx);
+
+/**
+ * Writes the dynamics for all parameters to the given array.
+ */
+TRM_DLL_EXPORT bool gnuspeech_trm_get_parameter_dynamics(gnuspeech_trm_t inst,
+                                                         double *dx);
 
 /**
  * Synthesizes the given number of samples and writes them to the given output
  * buffer. Returns the number of samples that actually were written.
  */
-TRM_DLL_EXPORT unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst,
-                                                     float *sample_buf,
-                                                     unsigned int n_samples,
-                                                     bool flush);
+TRM_DLL_EXPORT int gnuspeech_trm_synthesize(gnuspeech_trm_t inst,
+                                            float *sample_buf,
+                                            unsigned int n_samples, bool flush);
 
 #ifdef __cplusplus
 }

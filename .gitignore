@@ -1,2 +1,4 @@
 build
 .gdb_history
+__pycache__
+*.egg-info

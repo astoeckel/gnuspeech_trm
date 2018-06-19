@@ -19,8 +19,6 @@
 #include "gnuspeech_trm.h"
 #include "trm/Tube.h"
 
-#include <iostream>
-
 /******************************************************************************
  * C++ Private Implementation                                                 *
  ******************************************************************************/
@@ -606,7 +604,68 @@ bool gnuspeech_trm_get_parameter(const gnuspeech_trm_t inst_, int param,
 	}
 }
 
-bool gnuspeech_trm_update_parameter_dynamics(gnuspeech_trm_t inst_, double *dx)
+bool gnuspeech_trm_get_parameters(gnuspeech_trm_t inst_, double *dx)
+{
+	if (!inst_) {
+		return false;
+	}
+	TrmParameters &p = static_cast<TrmInstance *>(inst_)->params;
+	dx[TRM_PARAM_GLOT_PITCH] = p.glot_pitch;
+	dx[TRM_PARAM_GLOT_VOL] = p.glot_vol;
+	dx[TRM_PARAM_ASP_VOL] = p.asp_vol;
+	dx[TRM_PARAM_FRIC_VOL] = p.fric_vol;
+	dx[TRM_PARAM_FRIC_POS] = p.fric_pos;
+	dx[TRM_PARAM_FRIC_CF] = p.fric_cf;
+	dx[TRM_PARAM_FRIC_BW] = p.fric_bw;
+	for (int j = 0; j < GS::TRM::Tube::TOTAL_REGIONS; j++) {
+		dx[TRM_PARAM_R1 + j] = p.radius[j];
+	}
+	dx[TRM_PARAM_VELUM] = p.velum;
+	return true;
+}
+
+bool gnuspeech_trm_set_parameters(gnuspeech_trm_t inst_, const double *dx)
+{
+	if (!inst_) {
+		return false;
+	}
+	TrmParameters &p = static_cast<TrmInstance *>(inst_)->params;
+	p.glot_pitch = dx[TRM_PARAM_GLOT_PITCH];
+	p.glot_vol = dx[TRM_PARAM_GLOT_VOL];
+	p.asp_vol = dx[TRM_PARAM_ASP_VOL];
+	p.fric_vol = dx[TRM_PARAM_FRIC_VOL];
+	p.fric_pos = dx[TRM_PARAM_FRIC_POS];
+	p.fric_cf = dx[TRM_PARAM_FRIC_CF];
+	p.fric_bw = dx[TRM_PARAM_FRIC_BW];
+	for (int j = 0; j < GS::TRM::Tube::TOTAL_REGIONS; j++) {
+		p.radius[j] = dx[TRM_PARAM_R1 + j];
+	}
+	p.velum = dx[TRM_PARAM_VELUM];
+	return true;
+}
+
+bool gnuspeech_trm_get_parameter_dynamics(gnuspeech_trm_t inst_, double *dx)
+{
+	if (!inst_) {
+		return false;
+	}
+	TrmParameters &p = static_cast<TrmInstance *>(inst_)->params;
+	dx[TRM_PARAM_GLOT_PITCH] = p.dglot_pitch;
+	dx[TRM_PARAM_GLOT_VOL] = p.dglot_vol;
+	dx[TRM_PARAM_ASP_VOL] = p.dasp_vol;
+	dx[TRM_PARAM_FRIC_VOL] = p.dfric_vol;
+	dx[TRM_PARAM_FRIC_POS] = p.dfric_pos;
+	dx[TRM_PARAM_FRIC_CF] = p.dfric_cf;
+	dx[TRM_PARAM_FRIC_BW] = p.dfric_bw;
+	for (int j = 0; j < GS::TRM::Tube::TOTAL_REGIONS; j++) {
+		p.dradius[j] = dx[TRM_PARAM_R1 + j];
+	}
+	dx[TRM_PARAM_VELUM] = p.dvelum;
+	return true;
+}
+
+bool gnuspeech_trm_set_parameter_dynamics(gnuspeech_trm_t inst_,
+                                          const double *dx)
 {
 	if (!inst_) {
 		return false;
@@ -616,6 +675,7 @@ bool gnuspeech_trm_update_parameter_dynamics(gnuspeech_trm_t inst_, double *dx)
 	p.dglot_vol = dx[TRM_PARAM_GLOT_VOL];
 	p.dasp_vol = dx[TRM_PARAM_ASP_VOL];
 	p.dfric_vol = dx[TRM_PARAM_FRIC_VOL];
+	p.dfric_pos = dx[TRM_PARAM_FRIC_POS];
 	p.dfric_cf = dx[TRM_PARAM_FRIC_CF];
 	p.dfric_bw = dx[TRM_PARAM_FRIC_BW];
 	for (int j = 0; j < GS::TRM::Tube::TOTAL_REGIONS; j++) {
@@ -625,12 +685,12 @@ bool gnuspeech_trm_update_parameter_dynamics(gnuspeech_trm_t inst_, double *dx)
 	return true;
 }
 
-unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
-                                      unsigned int n_samples, bool flush)
+int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
+                             unsigned int n_samples, bool flush)
 {
 	/* Check parameters for validity */
 	if (!inst_ || !sample_buf) {
-		return 0;
+		return -1;
 	}
 
 	/* Fetch the actual instance */
@@ -657,13 +717,18 @@ unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 			}
 		}
 
-		/* Re-initialize the synthesizer */
-		inst.tube.loadConfig(inst.config);
-		inst.tube.initializeSynthesizer();
-		inst.tube.initializeInputFilters(c.filter_period);
-		inst.config.updated = false;
-		inst.data_pos = 0;
-		inst.smpls_rem = 0;
+		/* Try to (re)initialize the synthesizer */
+		try {
+			inst.tube.loadConfig(inst.config);
+			inst.tube.initializeSynthesizer();
+			inst.tube.initializeInputFilters(c.filter_period);
+			inst.data_pos = 0;
+			inst.smpls_rem = 0;
+			inst.config.updated = false;
+		}
+		catch (...) {
+			return -1;
+		}
 	}
 
 	/* Calculate the number of control samples */
@@ -711,6 +776,7 @@ unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 			p.asp_vol = p.asp_vol + p.dasp_vol * dt;
 			p.fric_vol = p.fric_vol + p.dfric_vol * dt;
 			p.fric_pos = p.fric_pos + p.dfric_pos * dt;
+			p.fric_cf = p.fric_cf + p.dfric_cf * dt;
 			p.fric_bw = p.fric_bw + p.dfric_bw * dt;
 			for (int j = 0; j < GS::TRM::Tube::TOTAL_REGIONS; j++) {
 				p.radius[j] = std::max(p.radius[j] + p.dradius[j] * dt,
