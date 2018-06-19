@@ -24,8 +24,6 @@
 #include <memory>
 #include <vector>
 
-
-
 namespace GS {
 namespace TRM {
 
@@ -34,28 +32,28 @@ class FIRFilter;
 class WavetableGlottalSource {
 public:
 	enum Type { /*  WAVEFORM TYPES  */
-		TYPE_PULSE,
-		TYPE_SINE
+		        TYPE_PULSE,
+		        TYPE_SINE
 	};
 
-	WavetableGlottalSource(
-			Type type, double sampleRate,
-			double tp = 0.0, double tnMin = 0.0, double tnMax = 0.0);
+	WavetableGlottalSource(Type type, double sampleRate, double tp = 0.0,
+	                       double tnMin = 0.0, double tnMax = 0.0);
 	~WavetableGlottalSource();
 
 	void reset();
 	double getSample(double frequency);
 	void updateWavetable(double amplitude);
+
 private:
-	WavetableGlottalSource(const WavetableGlottalSource&) = delete;
-	WavetableGlottalSource& operator=(const WavetableGlottalSource&) = delete;
+	WavetableGlottalSource(const WavetableGlottalSource &) = delete;
+	WavetableGlottalSource &operator=(const WavetableGlottalSource &) = delete;
 
 	void incrementTablePosition(double frequency);
 
 	static double mod0(double value);
 
-	int    tableDiv1_;
-	int    tableDiv2_;
+	int tableDiv1_;
+	int tableDiv2_;
 	double tnLength_;
 	double tnDelta_;
 	double basicIncrement_;

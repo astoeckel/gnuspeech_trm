@@ -18,32 +18,27 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#include "BandpassFilter.h"
-
 #include <cmath>
 
-
+#include "BandpassFilter.h"
 
 namespace GS {
 namespace TRM {
 
 BandpassFilter::BandpassFilter()
-		: bpAlpha_(0.0)
-		, bpBeta_(0.0)
-		, bpGamma_(0.0)
-		, xn1_(0.0)
-		, xn2_(0.0)
-		, yn1_(0.0)
-		, yn2_(0.0)
+    : bpAlpha_(0.0),
+      bpBeta_(0.0),
+      bpGamma_(0.0),
+      xn1_(0.0),
+      xn2_(0.0),
+      yn1_(0.0),
+      yn2_(0.0)
 {
 }
 
-BandpassFilter::~BandpassFilter()
-{
-}
+BandpassFilter::~BandpassFilter() {}
 
-void
-BandpassFilter::reset()
+void BandpassFilter::reset()
 {
 	xn1_ = 0.0;
 	xn2_ = 0.0;
@@ -51,8 +46,8 @@ BandpassFilter::reset()
 	yn2_ = 0.0;
 }
 
-void
-BandpassFilter::update(double sampleRate, double bandwidth, double centerFreq)
+void BandpassFilter::update(double sampleRate, double bandwidth,
+                            double centerFreq)
 {
 	double tanValue = tan((M_PI * bandwidth) / sampleRate);
 	double cosValue = cos((2.0 * M_PI * centerFreq) / sampleRate);
@@ -62,17 +57,17 @@ BandpassFilter::update(double sampleRate, double bandwidth, double centerFreq)
 }
 
 /******************************************************************************
-*
-*  function:  bandpassFilter
-*
-*  purpose:   Frication bandpass filter, with variable center
-*             frequency and bandwidth.
-*
-******************************************************************************/
-double
-BandpassFilter::filter(double input)
+ *
+ *  function:  bandpassFilter
+ *
+ *  purpose:   Frication bandpass filter, with variable center
+ *             frequency and bandwidth.
+ *
+ ******************************************************************************/
+double BandpassFilter::filter(double input)
 {
-	double output = 2.0 * ((bpAlpha_ * (input - xn2_)) + (bpGamma_ * yn1_) - (bpBeta_ * yn2_));
+	double output = 2.0 * ((bpAlpha_ * (input - xn2_)) + (bpGamma_ * yn1_) -
+	                       (bpBeta_ * yn2_));
 
 	xn2_ = xn1_;
 	xn1_ = input;

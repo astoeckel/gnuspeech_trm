@@ -18,34 +18,24 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#include "ReflectionFilter.h"
-
 #include <cmath>
 
-
+#include "ReflectionFilter.h"
 
 namespace GS {
 namespace TRM {
 
-ReflectionFilter::ReflectionFilter(double apertureCoeff)
-		: reflectionY_(0.0)
+ReflectionFilter::ReflectionFilter(double apertureCoeff) : reflectionY_(0.0)
 {
 	b11_ = -apertureCoeff;
 	a10_ = 1.0 - fabs(b11_);
 }
 
-ReflectionFilter::~ReflectionFilter()
-{
-}
+ReflectionFilter::~ReflectionFilter() {}
 
-void
-ReflectionFilter::reset()
-{
-	reflectionY_ = 0.0;
-}
+void ReflectionFilter::reset() { reflectionY_ = 0.0; }
 
-double
-ReflectionFilter::filter(double input)
+double ReflectionFilter::filter(double input)
 {
 	double output = (a10_ * input) - (b11_ * reflectionY_);
 	reflectionY_ = output;

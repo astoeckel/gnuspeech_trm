@@ -19,11 +19,9 @@
 #define MOVING_AVERAGE_FILTER_H_
 
 #include <cassert>
+#include <cmath>   /* round */
 #include <cstddef> /* std::size_t */
-#include <cmath> /* round */
 #include <vector>
-
-
 
 namespace GS {
 namespace TRM {
@@ -31,13 +29,14 @@ namespace TRM {
 /*******************************************************************************
  * Moving average filter.
  */
-template<typename FloatType>
+template <typename FloatType>
 class MovingAverageFilter {
 public:
 	MovingAverageFilter(FloatType sampleRate, FloatType period /* seconds */);
 
 	void reset();
 	FloatType filter(FloatType value);
+
 private:
 	std::vector<FloatType> buf_;
 	typename std::vector<FloatType>::size_type pos_;
@@ -45,17 +44,16 @@ private:
 	double invN_;
 };
 
-
-
 /*******************************************************************************
  * Constructor.
  */
-template<typename FloatType>
-MovingAverageFilter<FloatType>::MovingAverageFilter(FloatType sampleRate, FloatType period)
-		: buf_(static_cast<std::size_t>(std::round(sampleRate * period)))
-		, pos_(buf_.size())
-		, sum_(0.0)
-		, invN_(1.0 / buf_.size())
+template <typename FloatType>
+MovingAverageFilter<FloatType>::MovingAverageFilter(FloatType sampleRate,
+                                                    FloatType period)
+    : buf_(static_cast<std::size_t>(std::round(sampleRate * period))),
+      pos_(buf_.size()),
+      sum_(0.0),
+      invN_(1.0 / buf_.size())
 {
 	assert(!buf_.empty());
 }
@@ -63,11 +61,11 @@ MovingAverageFilter<FloatType>::MovingAverageFilter(FloatType sampleRate, FloatT
 /*******************************************************************************
  *
  */
-template<typename FloatType>
-void
-MovingAverageFilter<FloatType>::reset()
+template <typename FloatType>
+void MovingAverageFilter<FloatType>::reset()
 {
-	for (auto& item : buf_) item = 0.0;
+	for (auto &item : buf_)
+		item = 0.0;
 	pos_ = buf_.size();
 	sum_ = 0.0;
 }
@@ -75,11 +73,11 @@ MovingAverageFilter<FloatType>::reset()
 /*******************************************************************************
  *
  */
-template<typename FloatType>
-FloatType
-MovingAverageFilter<FloatType>::filter(FloatType value) {
+template <typename FloatType>
+FloatType MovingAverageFilter<FloatType>::filter(FloatType value)
+{
 	if (++pos_ >= buf_.size()) {
-		if (pos_ > buf_.size()) { // first value
+		if (pos_ > buf_.size()) {  // first value
 			buf_.assign(buf_.size(), value);
 			sum_ = value * static_cast<double>(buf_.size());
 		}

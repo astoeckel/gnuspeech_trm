@@ -21,8 +21,6 @@
 #ifndef TRM_BANDPASS_FILTER_H_
 #define TRM_BANDPASS_FILTER_H_
 
-
-
 namespace GS {
 namespace TRM {
 
@@ -34,9 +32,10 @@ public:
 	void reset();
 	void update(double sampleRate, double bandwidth, double centerFreq);
 	double filter(double input);
+
 private:
-	BandpassFilter(const BandpassFilter&) = delete;
-	BandpassFilter& operator=(const BandpassFilter&) = delete;
+	BandpassFilter(const BandpassFilter &) = delete;
+	BandpassFilter &operator=(const BandpassFilter &) = delete;
 
 	double bpAlpha_;
 	double bpBeta_;

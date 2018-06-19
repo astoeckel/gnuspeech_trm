@@ -22,7 +22,8 @@
 
 #define SAMPLE_COUNT 1024
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char *argv[])
+{
 	gnuspeech_trm_t trm = gnuspeech_trm_create();
 
 	gnuspeech_trm_set_config(trm, TRM_CONF_VOLUME, 60.0);
@@ -47,7 +48,8 @@ int main(int argc, const char *argv[]) {
 
 	float samples[SAMPLE_COUNT];
 	for (int i = 0; i < 100; i++) {
-		unsigned int n = gnuspeech_trm_synthesize(trm, samples, SAMPLE_COUNT, false);
+		unsigned int n =
+		    gnuspeech_trm_synthesize(trm, samples, SAMPLE_COUNT, false);
 		write(STDOUT_FILENO, samples, sizeof(float) * n);
 	}
 

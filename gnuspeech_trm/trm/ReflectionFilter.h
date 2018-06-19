@@ -21,8 +21,6 @@
 #ifndef TRM_REFLECTION_FILTER_H_
 #define TRM_REFLECTION_FILTER_H_
 
-
-
 namespace GS {
 namespace TRM {
 
@@ -35,9 +33,10 @@ public:
 
 	void reset();
 	double filter(double input);
+
 private:
-	ReflectionFilter(const ReflectionFilter&) = delete;
-	ReflectionFilter& operator=(const ReflectionFilter&) = delete;
+	ReflectionFilter(const ReflectionFilter &) = delete;
+	ReflectionFilter &operator=(const ReflectionFilter &) = delete;
 
 	double a10_;
 	double b11_;

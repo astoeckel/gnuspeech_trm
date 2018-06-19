@@ -20,27 +20,16 @@
 
 #include "NoiseFilter.h"
 
-
-
 namespace GS {
 namespace TRM {
 
-NoiseFilter::NoiseFilter() : noiseX_(0.0)
-{
-}
+NoiseFilter::NoiseFilter() : noiseX_(0.0) {}
 
-NoiseFilter::~NoiseFilter()
-{
-}
+NoiseFilter::~NoiseFilter() {}
 
-void
-NoiseFilter::reset()
-{
-	noiseX_ = 0.0;
-}
+void NoiseFilter::reset() { noiseX_ = 0.0; }
 
-double
-NoiseFilter::filter(double input)
+double NoiseFilter::filter(double input)
 {
 	double output = input + noiseX_;
 	noiseX_ = input;

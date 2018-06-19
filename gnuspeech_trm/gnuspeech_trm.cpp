@@ -204,7 +204,7 @@ struct TrmInstance {
 	unsigned int data_pos = 0;
 
 	/**
-	 * Remainder used to accumulate very small requests to 
+	 * Remainder used to accumulate very small requests to
 	 */
 	unsigned int smpls_rem = 0;
 };
@@ -626,7 +626,7 @@ bool gnuspeech_trm_update_parameter_dynamics(gnuspeech_trm_t inst_, double *dx)
 }
 
 unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
-                              unsigned int n_samples, bool flush)
+                                      unsigned int n_samples, bool flush)
 {
 	/* Check parameters for validity */
 	if (!inst_ || !sample_buf) {
@@ -648,7 +648,8 @@ unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 		if (inst.tube.initialized()) {
 			inst.tube.flush();
 			static const double scale = inst.tube.calculateMonoScale();
-			while (inst.data_pos < data.size() && (samples_written < n_samples)) {
+			while (inst.data_pos < data.size() &&
+			       (samples_written < n_samples)) {
 				sample_buf[samples_written++] = data[inst.data_pos++] * scale;
 			}
 			if (samples_written == n_samples) {
@@ -675,7 +676,8 @@ unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 		n_it++;
 	}
 
-	while ((samples_written < n_samples) && ((n_it > 0) || (inst.data_pos < data.size()))) {
+	while ((samples_written < n_samples) &&
+	       ((n_it > 0) || (inst.data_pos < data.size()))) {
 		/* Check whether we need to synthesize new samples. If yes, update the
 		   control parameters and run the synthesizer. */
 		if (inst.data_pos >= data.size()) {
@@ -695,7 +697,8 @@ unsigned int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 			input.fricCF = p.fric_cf;
 			input.fricBW = p.fric_bw;
 			for (int j = 0; j < GS::TRM::Tube::TOTAL_REGIONS; j++) {
-				input.radius[j] = std::max(p.radius[j] * c.radius_coef[j], GS_TRM_TUBE_MIN_RADIUS);
+				input.radius[j] = std::max(p.radius[j] * c.radius_coef[j],
+				                           GS_TRM_TUBE_MIN_RADIUS);
 			}
 			input.velum = p.velum;
 

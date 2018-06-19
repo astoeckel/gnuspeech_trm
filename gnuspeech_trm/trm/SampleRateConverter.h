@@ -23,14 +23,13 @@
 
 #include <vector>
 
-
-
 namespace GS {
 namespace TRM {
 
 class SampleRateConverter {
 public:
-	SampleRateConverter(int sampleRate, float outputRate, std::vector<float>& outputData);
+	SampleRateConverter(int sampleRate, float outputRate,
+	                    std::vector<float> &outputData);
 	~SampleRateConverter();
 
 	void reset();
@@ -40,9 +39,10 @@ public:
 
 	double maximumSampleValue() const { return maximumSampleValue_; }
 	long numberSamples() const { return numberSamples_; }
+
 private:
-	SampleRateConverter(const SampleRateConverter&) = delete;
-	SampleRateConverter& operator=(const SampleRateConverter&) = delete;
+	SampleRateConverter(const SampleRateConverter &) = delete;
+	SampleRateConverter &operator=(const SampleRateConverter &) = delete;
 
 	void initializeConversion(int sampleRate, float outputRate);
 	void initializeBuffer();
@@ -69,7 +69,7 @@ private:
 	std::vector<double> h_;
 	std::vector<double> deltaH_;
 	std::vector<double> buffer_;
-	std::vector<float>& outputData_;
+	std::vector<float> &outputData_;
 };
 
 } /* namespace TRM */

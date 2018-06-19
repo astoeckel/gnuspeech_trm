@@ -20,30 +20,19 @@
 
 #include "NoiseSource.h"
 
-#define FACTOR                    377.0
-#define INITIAL_SEED              0.7892347
-
-
+#define FACTOR 377.0
+#define INITIAL_SEED 0.7892347
 
 namespace GS {
 namespace TRM {
 
-NoiseSource::NoiseSource() : seed_(INITIAL_SEED)
-{
-}
+NoiseSource::NoiseSource() : seed_(INITIAL_SEED) {}
 
-NoiseSource::~NoiseSource()
-{
-}
+NoiseSource::~NoiseSource() {}
 
-void
-NoiseSource::reset()
-{
-	seed_ = INITIAL_SEED;
-}
+void NoiseSource::reset() { seed_ = INITIAL_SEED; }
 
-double
-NoiseSource::getSample()
+double NoiseSource::getSample()
 {
 	double product = seed_ * FACTOR;
 	seed_ = product - static_cast<int>(product);

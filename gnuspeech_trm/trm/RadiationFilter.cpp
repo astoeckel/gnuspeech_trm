@@ -20,34 +20,28 @@
 
 #include "RadiationFilter.h"
 
-
-
 namespace GS {
 namespace TRM {
 
 RadiationFilter::RadiationFilter(double apertureCoeff)
-		: radiationX_(0.0)
-		, radiationY_(0.0)
+    : radiationX_(0.0), radiationY_(0.0)
 {
 	a20_ = apertureCoeff;
 	a21_ = b21_ = -a20_;
 }
 
-RadiationFilter::~RadiationFilter()
-{
-}
+RadiationFilter::~RadiationFilter() {}
 
-void
-RadiationFilter::reset()
+void RadiationFilter::reset()
 {
 	radiationX_ = 0.0;
 	radiationY_ = 0.0;
 }
 
-double
-RadiationFilter::filter(double input)
+double RadiationFilter::filter(double input)
 {
-	double output = (a20_ * input) + (a21_ * radiationX_) - (b21_ * radiationY_);
+	double output =
+	    (a20_ * input) + (a21_ * radiationX_) - (b21_ * radiationY_);
 	radiationX_ = input;
 	radiationY_ = output;
 	return output;

@@ -23,18 +23,16 @@
 
 #include <vector>
 
-
-
 namespace GS {
 namespace TRM {
 
 /******************************************************************************
-*
-*  class:    FIRFilter
-*
-*  purpose:  Is the linear phase, lowpass FIR filter.
-*
-******************************************************************************/
+ *
+ *  class:    FIRFilter
+ *
+ *  purpose:  Is the linear phase, lowpass FIR filter.
+ *
+ ******************************************************************************/
 class FIRFilter {
 public:
 	FIRFilter(double beta, double gamma, double cutoff);
@@ -42,15 +40,19 @@ public:
 
 	void reset();
 	double filter(double input, int needOutput);
-private:
-	FIRFilter(const FIRFilter&) = delete;
-	FIRFilter& operator=(const FIRFilter&) = delete;
 
-	static int maximallyFlat(double beta, double gamma, int* np, double* coefficient);
-	static void trim(double cutoff, int* numberCoefficients, double* coefficient);
+private:
+	FIRFilter(const FIRFilter &) = delete;
+	FIRFilter &operator=(const FIRFilter &) = delete;
+
+	static int maximallyFlat(double beta, double gamma, int *np,
+	                         double *coefficient);
+	static void trim(double cutoff, int *numberCoefficients,
+	                 double *coefficient);
 	static int increment(int pointer, int modulus);
 	static int decrement(int pointer, int modulus);
-	static void rationalApproximation(double number, int* order, int* numerator, int* denominator);
+	static void rationalApproximation(double number, int *order, int *numerator,
+	                                  int *denominator);
 
 	std::vector<double> data_;
 	std::vector<double> coef_;

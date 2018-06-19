@@ -31,20 +31,13 @@
  *
  ******************************************************************************/
 
-#include "Tube.h"
-
 #include <cmath>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <utility> /* move */
 
-#include <iostream>
-
-#include "Exception.h"
+#include "Tube.h"
 
 #define OUTPUT_VECTOR_RESERVE 1024
 
@@ -181,7 +174,7 @@ void Tube::initializeSynthesizer()
 		nyquist = sampleRate_ / 2.0;
 	}
 	else {
-		THROW_EXCEPTION(TRMException, "Illegal tube length.\n");
+		throw std::runtime_error("Illegal tube length.");
 	}
 
 	/*  CALCULATE THE BREATHINESS FACTOR  */
@@ -553,7 +546,8 @@ double Tube::vocalTract(double input, double frication)
 float Tube::calculateMonoScale()
 {
 	float scale = static_cast<float>(
-	    (OUTPUT_SCALE / std::max(1e-4, srConv_->maximumSampleValue())) * amplitude(volume_));
+	    (OUTPUT_SCALE / std::max(1e-4, srConv_->maximumSampleValue())) *
+	    amplitude(volume_));
 	return scale;
 }
 

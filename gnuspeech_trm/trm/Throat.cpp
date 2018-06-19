@@ -20,14 +20,11 @@
 
 #include "Throat.h"
 
-
-
 namespace GS {
 namespace TRM {
 
 Throat::Throat(double sampleRate, double throatCutoff, double throatGain)
-		: throatGain_(throatGain)
-		, throatY_(0.0)
+    : throatGain_(throatGain), throatY_(0.0)
 {
 	// Initializes the throat lowpass filter coefficients
 	// according to the throatCutoff value, and also the
@@ -37,28 +34,21 @@ Throat::Throat(double sampleRate, double throatCutoff, double throatGain)
 	tb1_ = 1.0 - ta0_;
 }
 
-Throat::~Throat()
-{
-}
+Throat::~Throat() {}
 
-void
-Throat::reset()
-{
-	throatY_ = 0.0;
-}
+void Throat::reset() { throatY_ = 0.0; }
 
 /******************************************************************************
-*
-*  function:  throat
-*
-*  purpose:   Simulates the radiation of sound through the walls
-*             of the throat. Note that this form of the filter
-*             uses addition instead of subtraction for the
-*             second term, since tb1 has reversed sign.
-*
-******************************************************************************/
-double
-Throat::process(double input)
+ *
+ *  function:  throat
+ *
+ *  purpose:   Simulates the radiation of sound through the walls
+ *             of the throat. Note that this form of the filter
+ *             uses addition instead of subtraction for the
+ *             second term, since tb1 has reversed sign.
+ *
+ ******************************************************************************/
+double Throat::process(double input)
 {
 	double output = (ta0_ * input) + (tb1_ * throatY_);
 	throatY_ = output;

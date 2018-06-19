@@ -21,8 +21,6 @@
 #ifndef TRM_NOISE_FILTER_H_
 #define TRM_NOISE_FILTER_H_
 
-
-
 namespace GS {
 namespace TRM {
 
@@ -34,9 +32,10 @@ public:
 
 	void reset();
 	double filter(double input);
+
 private:
-	NoiseFilter(const NoiseFilter&) = delete;
-	NoiseFilter& operator=(const NoiseFilter&) = delete;
+	NoiseFilter(const NoiseFilter &) = delete;
+	NoiseFilter &operator=(const NoiseFilter &) = delete;
 
 	double noiseX_;
 };

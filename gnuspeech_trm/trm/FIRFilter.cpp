@@ -18,15 +18,12 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
+#include <cmath>
+#include <stdexcept>
+
 #include "FIRFilter.h"
 
-#include <cmath>
-
-#include "Exception.h"
-
 #define LIMIT 200
-
-
 
 namespace GS {
 namespace TRM {
@@ -73,30 +70,28 @@ FIRFilter::FIRFilter(double beta, double gamma, double cutoff)
 #endif
 }
 
-FIRFilter::~FIRFilter()
-{
-}
+FIRFilter::~FIRFilter() {}
 
-void
-FIRFilter::reset()
+void FIRFilter::reset()
 {
-	for (auto& item : data_) item = 0.0;
+	for (auto &item : data_)
+		item = 0.0;
 	ptr_ = 0;
 }
 
 /******************************************************************************
-*
-*  function:  maximallyFlat
-*
-*  purpose:   Calculates coefficients for a linear phase lowpass FIR
-*             filter, with beta being the center frequency of the
-*             transition band (as a fraction of the sampling
-*             frequency), and gamme the width of the transition
-*             band.
-*
-******************************************************************************/
-int
-FIRFilter::maximallyFlat(double beta, double gamma, int* np, double* coefficient)
+ *
+ *  function:  maximallyFlat
+ *
+ *  purpose:   Calculates coefficients for a linear phase lowpass FIR
+ *             filter, with beta being the center frequency of the
+ *             transition band (as a fraction of the sampling
+ *             frequency), and gamme the width of the transition
+ *             band.
+ *
+ ******************************************************************************/
+int FIRFilter::maximallyFlat(double beta, double gamma, int *np,
+                             double *coefficient)
 {
 	double a[LIMIT + 1], c[LIMIT + 1], betaMinimum, ac;
 	int nt, numerator, n, ll, i;
@@ -106,21 +101,20 @@ FIRFilter::maximallyFlat(double beta, double gamma, int* np, double* coefficient
 
 	/*  CUT-OFF FREQUENCY MUST BE BETWEEN 0 HZ AND NYQUIST  */
 	if ((beta <= 0.0) || (beta >= 0.5)) {
-		THROW_EXCEPTION(TRMException, "Beta out of range.");
+		throw std::runtime_error("Beta out of range.");
 	}
 
 	/*  TRANSITION BAND MUST FIT WITH THE STOP BAND  */
-	betaMinimum = ((2.0 * beta) < (1.0 - 2.0 * beta)) ?
-				(2.0 * beta) :
-				(1.0 - 2.0 * beta);
+	betaMinimum =
+	    ((2.0 * beta) < (1.0 - 2.0 * beta)) ? (2.0 * beta) : (1.0 - 2.0 * beta);
 	if ((gamma <= 0.0) || (gamma >= betaMinimum)) {
-		THROW_EXCEPTION(TRMException, "Gamma out of range.");
+		throw std::runtime_error("Gamma out of range.");
 	}
 
 	/*  MAKE SURE TRANSITION BAND NOT TOO SMALL  */
-	nt = (int) (1.0 / (4.0 * gamma * gamma));
+	nt = (int)(1.0 / (4.0 * gamma * gamma));
 	if (nt > 160) {
-		THROW_EXCEPTION(TRMException, "Gamma too small.");
+		throw std::runtime_error("Gamma too small.");
 	}
 
 	/*  CALCULATE THE RATIONAL APPROXIMATION TO THE CUT-OFF POINT  */
@@ -140,7 +134,7 @@ FIRFilter::maximallyFlat(double beta, double gamma, int* np, double* coefficient
 	for (i = 2; i <= *np; i++) {
 		int j;
 		double x, sum = 1.0, y;
-		c[i] = cos((2.0 * M_PI) * ((double) (i - 1) / (double) n));
+		c[i] = cos((2.0 * M_PI) * ((double)(i - 1) / (double)n));
 		x = (1.0 - c[i]) / 2.0;
 		y = x;
 
@@ -153,7 +147,7 @@ FIRFilter::maximallyFlat(double beta, double gamma, int* np, double* coefficient
 			if (numerator != 1) {
 				int jj;
 				for (jj = 1; jj <= (numerator - 1); jj++) {
-					z *= 1.0 + ((double) j / (double) jj);
+					z *= 1.0 + ((double)j / (double)jj);
 				}
 			}
 			y *= x;
@@ -171,24 +165,24 @@ FIRFilter::maximallyFlat(double beta, double gamma, int* np, double* coefficient
 			if (m > nt) {
 				m = n - m;
 			}
-			coefficient[i] += c[m+1] * a[j];
+			coefficient[i] += c[m + 1] * a[j];
 		}
-		coefficient[i] *= 2.0 / (double) n;
+		coefficient[i] *= 2.0 / (double)n;
 	}
 
 	return 0;
 }
 
 /******************************************************************************
-*
-*  function:  trim
-*
-*  purpose:   Trims the higher order coefficients of the FIR filter
-*             which fall below the cutoff value.
-*
-******************************************************************************/
-void
-FIRFilter::trim(double cutoff, int* numberCoefficients, double* coefficient)
+ *
+ *  function:  trim
+ *
+ *  purpose:   Trims the higher order coefficients of the FIR filter
+ *             which fall below the cutoff value.
+ *
+ ******************************************************************************/
+void FIRFilter::trim(double cutoff, int *numberCoefficients,
+                     double *coefficient)
 {
 	for (int i = *numberCoefficients; i > 0; i--) {
 		if (fabs(coefficient[i]) >= fabs(cutoff)) {
@@ -199,43 +193,42 @@ FIRFilter::trim(double cutoff, int* numberCoefficients, double* coefficient)
 }
 
 /******************************************************************************
-*
-*  function:  increment
-*
-*  purpose:   Increments the pointer to the circular FIR filter
-*             buffer, keeping it in the range 0 -> modulus-1.
-*
-******************************************************************************/
-int
-FIRFilter::increment(int pointer, int modulus)
+ *
+ *  function:  increment
+ *
+ *  purpose:   Increments the pointer to the circular FIR filter
+ *             buffer, keeping it in the range 0 -> modulus-1.
+ *
+ ******************************************************************************/
+int FIRFilter::increment(int pointer, int modulus)
 {
 	if (++pointer >= modulus) {
 		return 0;
-	} else {
+	}
+	else {
 		return pointer;
 	}
 }
 
 /******************************************************************************
-*
-*  function:  decrement
-*
-*  purpose:   Decrements the pointer to the circular FIR filter
-*             buffer, keeping it in the range 0 -> modulus-1.
-*
-******************************************************************************/
-int
-FIRFilter::decrement(int pointer, int modulus)
+ *
+ *  function:  decrement
+ *
+ *  purpose:   Decrements the pointer to the circular FIR filter
+ *             buffer, keeping it in the range 0 -> modulus-1.
+ *
+ ******************************************************************************/
+int FIRFilter::decrement(int pointer, int modulus)
 {
 	if (--pointer < 0) {
 		return modulus - 1;
-	} else {
+	}
+	else {
 		return pointer;
 	}
 }
 
-double
-FIRFilter::filter(double input, int needOutput)
+double FIRFilter::filter(double input, int needOutput)
 {
 	if (needOutput) {
 		int i;
@@ -255,7 +248,8 @@ FIRFilter::filter(double input, int needOutput)
 
 		/*  RETURN THE OUTPUT VALUE  */
 		return output;
-	} else {
+	}
+	else {
 		/*  PUT INPUT SAMPLE INTO DATA BUFFER  */
 		data_[ptr_] = input;
 
@@ -267,15 +261,15 @@ FIRFilter::filter(double input, int needOutput)
 }
 
 /******************************************************************************
-*
-*  function:  rationalApproximation
-*
-*  purpose:   Calculates the best rational approximation to 'number',
-*             given the maximum 'order'.
-*
-******************************************************************************/
-void
-FIRFilter::rationalApproximation(double number, int* order, int* numerator, int* denominator)
+ *
+ *  function:  rationalApproximation
+ *
+ *  purpose:   Calculates the best rational approximation to 'number',
+ *             given the maximum 'order'.
+ *
+ ******************************************************************************/
+void FIRFilter::rationalApproximation(double number, int *order, int *numerator,
+                                      int *denominator)
 {
 	double fractionalPart, minimumError = 1.0;
 	int i, orderMaximum, modulus = 0;
@@ -289,7 +283,7 @@ FIRFilter::rationalApproximation(double number, int* order, int* numerator, int*
 	}
 
 	/*  FIND THE ABSOLUTE VALUE OF THE FRACTIONAL PART OF THE NUMBER  */
-	fractionalPart = fabs(number - (int) number);
+	fractionalPart = fabs(number - (int)number);
 
 	/*  DETERMINE THE MAXIMUM VALUE OF THE DENOMINATOR  */
 	orderMaximum = 2 * (*order);
@@ -298,8 +292,8 @@ FIRFilter::rationalApproximation(double number, int* order, int* numerator, int*
 	/*  FIND THE BEST DENOMINATOR VALUE  */
 	for (i = (*order); i <= orderMaximum; i++) {
 		double ps = i * fractionalPart;
-		int ip = (int) (ps + 0.5);
-		double error = fabs((ps - (double) ip) / (double) i);
+		int ip = (int)(ps + 0.5);
+		double error = fabs((ps - (double)ip) / (double)i);
 		if (error < minimumError) {
 			minimumError = error;
 			modulus = ip;
@@ -308,7 +302,7 @@ FIRFilter::rationalApproximation(double number, int* order, int* numerator, int*
 	}
 
 	/*  DETERMINE THE NUMERATOR VALUE, MAKING IT NEGATIVE IF NECESSARY  */
-	*numerator = (int) fabs(number) * (*denominator) + modulus;
+	*numerator = (int)fabs(number) * (*denominator) + modulus;
 	if (number < 0) {
 		*numerator *= -1;
 	}

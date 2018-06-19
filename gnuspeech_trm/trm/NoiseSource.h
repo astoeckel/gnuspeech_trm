@@ -21,8 +21,6 @@
 #ifndef TRM_NOISE_SOURCE_H_
 #define TRM_NOISE_SOURCE_H_
 
-
-
 namespace GS {
 namespace TRM {
 
@@ -33,9 +31,10 @@ public:
 
 	void reset();
 	double getSample();
+
 private:
-	NoiseSource(const NoiseSource&) = delete;
-	NoiseSource& operator=(const NoiseSource&) = delete;
+	NoiseSource(const NoiseSource &) = delete;
+	NoiseSource &operator=(const NoiseSource &) = delete;
 
 	double seed_;
 };
