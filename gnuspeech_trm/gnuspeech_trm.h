@@ -1,4 +1,4 @@
-/**
+/*
  *  gnuspeech_trm -- Standalone gnuspeech articulatory synthesiser
  *  Copyright (C) 2018  Andreas Stöckel
  *

@@ -1,4 +1,4 @@
-/**
+/*
  *  gnuspeech_trm -- Standalone gnuspeech articulatory synthesiser
  *  Copyright (C) 2018  Andreas Stöckel
  *
@@ -30,7 +30,7 @@ namespace {
  */
 struct TrmConfig {
 	/**
-	 * Output sample rate (22.05, 44.1)
+	 * Output sample rate in samples per second.
 	 */
 	double output_rate = 44100.0;
 
@@ -76,7 +76,7 @@ struct TrmConfig {
 	double nose_coef = 5000.0;
 
 	/**
-	 * Throat lp cutoff (50 - nyquist Hz)
+	 * Throat lp cutoff (>= 50)
 	 */
 	double throat_cutoff = 1500.0;
 
@@ -203,8 +203,9 @@ struct TrmInstance {
 
 	/**
 	 * Remainder used to accumulate very small requests to
+	 * gnuspeech_trm_synthesize()
 	 */
-	unsigned int smpls_rem = 0;
+	double smpls_rem = 0.0;
 };
 }  // namespace
 
@@ -229,7 +230,7 @@ void gnuspeech_trm_reset(gnuspeech_trm_t inst_)
 		inst.params = TrmParameters(); /* Reset the parameters */
 		inst.tube.reset();             /* Reset the synthesizer */
 		inst.data_pos = 0;
-		inst.smpls_rem = 0;
+		inst.smpls_rem = 0.0;
 	}
 }
 
@@ -247,10 +248,9 @@ bool gnuspeech_trm_set_config(gnuspeech_trm_t inst_, int conf, double value)
 	}
 
 	TrmConfig &c = static_cast<TrmInstance *>(inst_)->config;
-	const double nyquist = c.output_rate * 0.5;
 	switch (conf) {
 		case TRM_CONF_OUTPUT_RATE:
-			if (value == 44100.0 || value == 22050.0) {
+			if (value > 0.0) {
 				SET_CONFIG_AND_RETURN(output_rate);
 			}
 			return false;
@@ -292,19 +292,19 @@ bool gnuspeech_trm_set_config(gnuspeech_trm_t inst_, int conf, double value)
 			return false;
 
 		case TRM_CONF_MOUTH_COEF:
-			if (value >= 0.0 && value < nyquist) {
+			if (value >= 0.0) {
 				SET_CONFIG_AND_RETURN(mouth_coef);
 			}
 			return false;
 
 		case TRM_CONF_NOSE_COEF:
-			if (value >= 0.0 && value < nyquist) {
+			if (value >= 0.0) {
 				SET_CONFIG_AND_RETURN(nose_coef);
 			}
 			return false;
 
 		case TRM_CONF_THROAT_CUTOFF:
-			if (value >= 50.0 && value < nyquist) {
+			if (value >= 50.0) {
 				SET_CONFIG_AND_RETURN(throat_cutoff);
 			}
 			return false;
@@ -706,7 +706,6 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 	if (inst.config.updated) {
 		/* Make sure to read remaining data */
 		if (inst.tube.initialized()) {
-			inst.tube.flush();
 			static const double scale = inst.tube.calculateMonoScale();
 			while (inst.data_pos < data.size() &&
 			       (samples_written < n_samples)) {
@@ -723,7 +722,7 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 			inst.tube.initializeSynthesizer();
 			inst.tube.initializeInputFilters(c.filter_period);
 			inst.data_pos = 0;
-			inst.smpls_rem = 0;
+			inst.smpls_rem = 0.0;
 			inst.config.updated = false;
 		}
 		catch (...) {
@@ -734,12 +733,9 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 	/* Calculate the number of control samples */
 	double scale = 0.0;
 	const double dt = inst.tube.secPerSample();
-	const int smpls_per_smpl = inst.tube.outputSamplesPerSample();
+	const double smpls_per_smpl = inst.tube.outputSamplesPerSample();
 	int n_it = (n_samples + inst.smpls_rem) / smpls_per_smpl;
-	inst.smpls_rem = (n_samples + inst.smpls_rem) % smpls_per_smpl;
-	if (inst.smpls_rem > 0 && flush) {
-		n_it++;
-	}
+	inst.smpls_rem = (n_samples + inst.smpls_rem) - n_it * smpls_per_smpl;
 
 	while ((samples_written < n_samples) &&
 	       ((n_it > 0) || (inst.data_pos < data.size()))) {
@@ -784,11 +780,6 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 			}
 			p.velum = p.velum + p.dvelum * dt;
 			n_it--;
-
-			/* Flush data from the resampler to the output */
-			if (n_it == 0 && flush) {
-				inst.tube.flush();
-			}
 		}
 		else {
 			/* Fetch the value used for volume normalisation */
@@ -803,7 +794,7 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 
 	/* We've flushed the buffer, reset the sample remainder accumulator */
 	if (flush) {
-		inst.smpls_rem = 0;
+		inst.smpls_rem = 0.0;
 	}
 
 	return samples_written;

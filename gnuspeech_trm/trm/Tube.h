@@ -111,17 +111,15 @@ public:
 	float calculateMonoScale();
 
 	void reset();
-	void flush();
 
-	int outputSamplesPerSample() const {
+	double outputSamplesPerSample() const
+	{
 		return double(outputRate_) / double(sampleRate_);
 	}
 
-	double secPerSample() const {
-		return 1.0 / double(sampleRate_);
-	}
+	double secPerSample() const { return 1.0 / double(sampleRate_); }
 
-	std::vector<float>& outputData() { return outputData_; }
+	std::vector<float> &outputData() { return outputData_; }
 
 private:
 	enum { VELUM = N1 };

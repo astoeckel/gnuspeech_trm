@@ -260,8 +260,6 @@ void Tube::synthesizeForSingleInput(const InputData &inputData)
 	synthesize();
 }
 
-void Tube::flush() { srConv_->flushBuffer(); }
-
 /******************************************************************************
  *
  *  function:  synthesize
@@ -546,7 +544,7 @@ double Tube::vocalTract(double input, double frication)
 float Tube::calculateMonoScale()
 {
 	float scale = static_cast<float>(
-	    (OUTPUT_SCALE / std::max(1e-4, srConv_->maximumSampleValue())) *
+	    (OUTPUT_SCALE / std::max(2e-3, srConv_->maximumSampleValue())) *
 	    amplitude(volume_));
 	return scale;
 }
