@@ -29,21 +29,21 @@ int main()
 	gnuspeech_trm_set_config(trm, TRM_CONF_VOLUME, 60.0);
 	gnuspeech_trm_set_config(trm, TRM_CONF_FILTER_PERIOD, 10e-3);
 
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_GLOT_PITCH, 0);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_GLOT_PITCH, -1);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_GLOT_VOL, 60);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_VELUM, 0.0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_VOL, 0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_POS, 0);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_VELUM, 0.1);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_VOL, 40);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_POS, 0.1);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_BW, 220.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_FRIC_CF, 100.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R1, 1.0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R1, 1.0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R2, 1.0);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R1, 0.3);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R2, 0.2);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R3, 1.0);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R4, 1.0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R5, 1.0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R6, 1.0);
-	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R7, 1.0);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R5, 0.1);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R6, 0.1);
+	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R7, 0.1);
 	gnuspeech_trm_set_parameter(trm, TRM_PARAM_R8, 1.0);
 
 	float samples[SAMPLE_COUNT];
