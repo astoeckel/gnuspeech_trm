@@ -257,6 +257,9 @@ class TRM:
         # Create a new instance
         self._inst = TRM._lib.gnuspeech_trm_create()
 
+        # Publish the parameter count
+        self.total_params = TRM._total_params
+
         # Load configuration from the given dictionary
         if not config_dict is None:
             self.configure(config_dict)
@@ -398,7 +401,7 @@ class TRM:
 
 if __name__ == '__main__':
     import sys
-    trm = TRM(TRM.voice_female)
+    trm = TRM(TRM.voice_male)
 
     # Test reading/writing configuration and parameter entries
     for key in trm._conf_map.keys():

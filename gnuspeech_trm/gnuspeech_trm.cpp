@@ -177,6 +177,13 @@ struct TrmParameters {
 };
 
 /**
+ * Used to clip the state variables to a sane range.
+ */
+static inline double clip(double x, double min, double max) {
+	return std::max(min, std::min(max, x));
+}
+
+/**
  * Actual object behing gnuspeech_trm_t. Holds the configuration, current
  * dynamics data and parameters, as well as
  */
@@ -767,18 +774,18 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 			inst.tube.synthesizeForSingleInput(input);
 
 			/* Interpolate the control parameters */
-			p.glot_pitch = p.glot_pitch + p.dglot_pitch * dt;
-			p.glot_vol = p.glot_vol + p.dglot_vol * dt;
-			p.asp_vol = p.asp_vol + p.dasp_vol * dt;
-			p.fric_vol = p.fric_vol + p.dfric_vol * dt;
-			p.fric_pos = p.fric_pos + p.dfric_pos * dt;
-			p.fric_cf = p.fric_cf + p.dfric_cf * dt;
-			p.fric_bw = p.fric_bw + p.dfric_bw * dt;
+			p.glot_pitch = clip(p.glot_pitch + p.dglot_pitch * dt, -5., 5.);
+			p.glot_vol = clip(p.glot_vol + p.dglot_vol * dt, 0., 60.);
+			p.asp_vol = clip(p.asp_vol + p.dasp_vol * dt, 0., 60.);
+			p.fric_vol = clip(p.fric_vol + p.dfric_vol * dt, 0., 60.);
+			p.fric_pos = clip(p.fric_pos + p.dfric_pos * dt, 0., 8.0);
+			p.fric_cf = clip(p.fric_cf + p.dfric_cf * dt, 0., 4000.);
+			p.fric_bw = clip(p.fric_bw + p.dfric_bw * dt, 0., 4000.);
 			for (int j = 0; j < GS::TRM::Tube::TOTAL_REGIONS; j++) {
-				p.radius[j] = std::max(p.radius[j] + p.dradius[j] * dt,
-				                       GS_TRM_TUBE_MIN_RADIUS);
+				p.radius[j] = clip(p.radius[j] + p.dradius[j] * dt,
+				                           GS_TRM_TUBE_MIN_RADIUS, 1.0);
 			}
-			p.velum = p.velum + p.dvelum * dt;
+			p.velum = clip(p.velum + p.dvelum * dt, 0.0, 1.0);
 			n_it--;
 		}
 		else {
