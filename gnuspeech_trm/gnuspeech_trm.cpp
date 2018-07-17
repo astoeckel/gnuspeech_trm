@@ -775,9 +775,9 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 
 			/* Interpolate the control parameters */
 			p.glot_pitch = clip(p.glot_pitch + p.dglot_pitch * dt, -5., 5.);
-			p.glot_vol = clip(p.glot_vol + p.dglot_vol * dt, 0., 60.);
-			p.asp_vol = clip(p.asp_vol + p.dasp_vol * dt, 0., 60.);
-			p.fric_vol = clip(p.fric_vol + p.dfric_vol * dt, 0., 60.);
+			p.glot_vol = clip(p.glot_vol + p.dglot_vol * dt, 0., 40.);
+			p.asp_vol = clip(p.asp_vol + p.dasp_vol * dt, 0., 40.);
+			p.fric_vol = clip(p.fric_vol + p.dfric_vol * dt, 0., 40.);
 			p.fric_pos = clip(p.fric_pos + p.dfric_pos * dt, 0., 8.0);
 			p.fric_cf = clip(p.fric_cf + p.dfric_cf * dt, 0., 4000.);
 			p.fric_bw = clip(p.fric_bw + p.dfric_bw * dt, 0., 4000.);
