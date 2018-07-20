@@ -776,7 +776,7 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 			inst.tube.synthesizeForSingleInput(input);
 
 			/* Interpolate the control parameters */
-			p.glot_pitch = clip(p.glot_pitch + p.dglot_pitch * dt, -20., 20.);
+			p.glot_pitch = clip(p.glot_pitch + p.dglot_pitch * dt, -100., 100.);
 			p.glot_vol = clip(p.glot_vol + p.dglot_vol * dt, 0., 60.);
 			p.asp_vol = clip(p.asp_vol + p.dasp_vol * dt, 0., 60.);
 			p.fric_vol = clip(p.fric_vol + p.dfric_vol * dt, 0., 60.);
