@@ -46,7 +46,7 @@ SampleRateConverter::~SampleRateConverter() { free(m_mem); }
 
 void SampleRateConverter::reset()
 {
-	m_maximum_sample_value = 0;
+	m_maximum_sample_value = 0.0002;
 	m_number_samples = 0;
 	trm_resampler_reset_mem(m_resampler);
 	trm_resampler_skip_zeros(m_resampler);
@@ -60,7 +60,7 @@ void SampleRateConverter::dataFill(float data)
 	                                        &out_len);
 	for (uint32_t i = 0; i < out_len; i++) {
 		/* Track the maximum value */
-		if (std::fabs(out[i] > m_maximum_sample_value)) {
+		if (std::fabs(out[i]) > m_maximum_sample_value) {
 			m_maximum_sample_value = fabs(out[i]);
 		}
 

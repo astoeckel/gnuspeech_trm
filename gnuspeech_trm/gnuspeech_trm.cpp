@@ -792,11 +792,7 @@ int gnuspeech_trm_synthesize(gnuspeech_trm_t inst_, float *sample_buf,
 		}
 		else {
 			/* Fetch the value used for volume normalisation */
-			if (scale == 0.0) {
-				scale = inst.tube.calculateMonoScale();
-			}
-
-			/* Write data from the output buffer to the target buffer */
+			scale = inst.tube.calculateMonoScale();
 			sample_buf[samples_written++] = data[inst.data_pos++] * scale;
 		}
 	}
