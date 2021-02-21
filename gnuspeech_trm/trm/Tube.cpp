@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <stdexcept>
 #include <utility> /* move */
 
 #include "Tube.h"
@@ -544,7 +545,7 @@ double Tube::vocalTract(double input, double frication)
 float Tube::calculateMonoScale()
 {
 	float scale = static_cast<float>(
-	    (OUTPUT_SCALE / std::max(1e-4, srConv_->maximumSampleValue())) *
+	    (OUTPUT_SCALE / srConv_->maximumSampleValue()) *
 	    amplitude(volume_));
 	return scale;
 }
