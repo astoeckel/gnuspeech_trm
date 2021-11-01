@@ -2,7 +2,7 @@
 
 This repository contains a standalone version of the Tube Resonance Model (TRM)
 used in the Gnuspeech articulatory speech synthesizer. The code comes with a
-thin C wrapper that allows to control all aspectes of the TRM in
+thin C wrapper that allows to control all aspects of the TRM in
 realtime. Furthermore, a Python wrapper is included that allows to integrate the
 TRM into any Python application.
 
